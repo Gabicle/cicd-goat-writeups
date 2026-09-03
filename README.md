@@ -1,4 +1,4 @@
-# CICD-Goat Security Walkthrough
+# CICD-Goat Security Walkthroughs
 
 A hands-on DevSecOps portfolio project working through
 [CICD-Goat](https://github.com/cider-security-research/cicd-goat), a
@@ -23,9 +23,10 @@ it exploitable, and what a real remediation looks like.
 
 ## Scope
 
-Five challenges selected out of CICD-Goat's full set, chosen to cover five
-distinct risk categories rather than several variations on the same one.
-All five are complete.
+Originally five challenges, extended to cover as many of the ten OWASP
+CICD-SEC risk categories as CICD-Goat has a clean matching challenge for.
+Seven complete so far, covering seven distinct categories; two more are
+in progress.
 
 | Challenge    | OWASP Mapping                                   | Summary                                                                                                                                                          |
 | ------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -34,6 +35,16 @@ All five are complete.
 | Caterpillar  | CICD-SEC-2 (Identity & Access Mgmt), CICD-SEC-6 | Read-only repo access was bypassed using an over-privileged service token that leaked through a low-privilege build's environment variables.                     |
 | Twiddledum   | CICD-SEC-3 (Dependency Chain Abuse)             | A dependency pulled from an internal repo with looser access controls let its code execute inside a build for a project that could never be written to directly. |
 | Dodo         | CICD-SEC-1 (Insufficient Flow Control)          | A security scanner correctly detected a policy violation on every run; nothing enforced that a failed scan actually stopped the deployment.                      |
+| Cheshire Cat | CICD-SEC-5 (Insufficient PBAC)                  | Nothing stopped a pipeline from choosing to run on the Jenkins controller itself instead of a sandboxed agent, exposing the server's own filesystem.             |
+| Hearts       | CICD-SEC-7 (Insecure System Configuration)      | A brute-forceable admin password plus a permissive agent-launch feature let a fake SSH server capture a System-scoped Jenkins credential in transit.             |
+
+Two categories remain to reach full coverage of the list: CICD-SEC-8
+(Ungoverned Usage of 3rd-Party Services) and CICD-SEC-9 (Improper
+Artifact Integrity Validation), both mapped to specific CICD-Goat
+challenges and in progress. CICD-SEC-10 (Insufficient Logging and
+Visibility) has no clean matching CICD-Goat challenge, since it's a
+detective-control gap rather than something an exploit-and-flag mechanic
+demonstrates well; whether and how to cover it is still undecided.
 
 ## Structure
 
@@ -55,11 +66,12 @@ being demonstrated, is documented in full in each `02-attack.md`.
 
 ## Fix-and-Verify
 
-Root cause and remediation are documented for each challenge, but actually
-implementing each fix in the live Jenkins/Gitea configuration and
-re-running the attack to confirm it's blocked is being done as a batch
-pass now that all five are solved, rather than challenge-by-challenge.
-This was a deliberate sequencing choice, not an oversight: as long as
-each fix stays scoped to its own job and credential rather than touching
-Jenkins-wide settings, applying it earlier would only have risked
-accidentally hardening a challenge before it had been attempted.
+Root cause and remediation are documented for each challenge as it's
+completed. Actually implementing each fix in the live Jenkins/Gitea/GitLab
+configuration and re-running the attack to confirm it's blocked is being
+done as a single batch pass once the full challenge set (including the
+two currently in progress) is solved, rather than challenge-by-challenge.
+This is a deliberate sequencing choice, not an oversight: as long as each
+fix stays scoped to its own job and credential rather than touching
+shared, system-wide settings, applying it earlier would only risk
+accidentally hardening a challenge before it's been attempted.
